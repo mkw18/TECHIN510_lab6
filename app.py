@@ -25,7 +25,7 @@ load_dotenv()
 
 
 st.set_page_config(
-    page_title="Chat with the PDF",
+    page_title="Resume Assistance",
     page_icon="🦙",
     layout="centered",
     initial_sidebar_state="auto",
@@ -34,7 +34,7 @@ st.set_page_config(
 
 if "messages" not in st.session_state.keys():  # Initialize the chat messages history
     st.session_state.messages = [
-        {"role": "assistant", "content": "Ask me a question about your document!"}
+        {"role": "assistant", "content": "Upload your Resume or Cover Letter!"}
     ]
 
 uploaded_file = st.file_uploader("Upload a file")
@@ -52,14 +52,14 @@ if uploaded_file:
                 base_url=os.getenv("OPENAI_API_BASE"),
                 model="gpt-4",
                 temperature=0.0,
-                system_prompt="You are an expert on the content of the document, provide detailed answers to the questions. Use the document to support your answers.",
+                system_prompt="You are an expert on the content of the document, provide detailed answers to the questions. Use the document to support your answers. Provide detailed feedback for the resume or cover letter when asked, and point out the shortcome if existed.",
             )
             index = VectorStoreIndex.from_documents(docs)
     os.remove(tmp.name)  # remove temp file
 
     if "chat_engine" not in st.session_state.keys():  # Initialize the chat engine
         st.session_state.chat_engine = index.as_chat_engine(
-            chat_mode="openai", verbose=True, llm=llm
+            chat_mode="condense_question", verbose=True, llm=llm
         )
 
 if prompt := st.chat_input(
