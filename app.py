@@ -9,6 +9,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# import asyncio
+
+# def get_or_create_eventloop():
+#     try:
+#         return asyncio.get_event_loop()
+#     except RuntimeError as ex:
+#         if "There is no current event loop in thread" in str(ex):
+#             loop = asyncio.new_event_loop()
+#             asyncio.set_event_loop(loop)
+#             return asyncio.get_event_loop()
+
+# loop = get_or_create_eventloop()
+# asyncio.set_event_loop(loop)
+
+
 st.set_page_config(
     page_title="Chat with the PDF",
     page_icon="🦙",
@@ -35,7 +50,7 @@ if uploaded_file:
             llm = OpenAI(
                 api_key=os.getenv("OPENAI_API_KEY"),
                 base_url=os.getenv("OPENAI_API_BASE"),
-                model="gpt-3.5-turbo",
+                model="gpt-4",
                 temperature=0.0,
                 system_prompt="You are an expert on the content of the document, provide detailed answers to the questions. Use the document to support your answers.",
             )
@@ -44,7 +59,7 @@ if uploaded_file:
 
     if "chat_engine" not in st.session_state.keys():  # Initialize the chat engine
         st.session_state.chat_engine = index.as_chat_engine(
-            chat_mode="condense_question", verbose=False, llm=llm
+            chat_mode="openai", verbose=True, llm=llm
         )
 
 if prompt := st.chat_input(
